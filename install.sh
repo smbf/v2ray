@@ -695,7 +695,12 @@ install_v2ray() {
 
 	rm -rf /tmp/v2ray
 
-	git clone https://github.com/233boy/v2ray /etc/v2ray/233boy/v2ray
+	if [[ $local_install ]]; then
+		mkdir -p /etc/v2ray/233boy/v2ray
+		cp -rf $(pwd)/* /etc/v2ray/233boy/v2ray
+	else
+		git clone https://github.com/233boy/v2ray /etc/v2ray/233boy/v2ray
+	fi
 
 	if [ $shadowsocks ]; then
 		if [[ $is_blocked_ad ]]; then
@@ -1240,7 +1245,7 @@ show_config_info() {
 		echo
 		echo -e "$yellow TLS (Enable TLS) = ${cyan}打开$none"
 		echo
-		echo -e " 请将 Obfs 设置为 $obfs ...并忽略 传输协议... (如果你使用 ShadowRay) "
+		echo -e " 请将 Obfs 设置为 $obfs ...并忽略 传输协议... (如果你使用 Pepi / ShadowRay) "
 		echo
 
 	else
@@ -1258,10 +1263,10 @@ show_config_info() {
 		echo -e "$yellow 伪装类型 (header type) = ${cyan}${header}$none"
 		echo
 		if [[ $obfs ]]; then
-			echo -e " 请将 Obfs 设置为 $obfs ...并忽略 传输协议... (如果你使用 ShadowRay) "
+			echo -e " 请将 Obfs 设置为 $obfs ...并忽略 传输协议... (如果你使用 Pepi / ShadowRay) "
 			echo
 		else
-			echo -e " 帅帅的提示...此 V2Ray 配置不支持 ShadowRay"
+			echo -e " 帅帅的提示...此 V2Ray 配置不支持 Pepi / ShadowRay"
 			echo
 		fi
 		if [[ $v2ray_transport_opt -ge 9 && $is_blocked_ad ]]; then
@@ -1365,17 +1370,17 @@ get_qr_link() {
 			echo -e "$yellow 适用于 V2RayNG / Kitsunebi = $cyan${link1}$none"
 			echo
 			if [[ $ios_qr && $link3 ]]; then
-				echo -e "$yellow 适用于 ShadowRay = $cyan${link3}$none"
+				echo -e "$yellow 适用于 Pepi / ShadowRay = $cyan${link3}$none"
 				echo
-				echo " 请在 ShadowRay 配置界面将 Alter Id 设置为 233 (如果你使用 ShadowRay)"
+				echo " 请在 Pepi / ShadowRay 配置界面将 Alter Id 设置为 233 (如果你使用 Pepi / ShadowRay)"
 				if [[ $v2ray_transport_opt == 4 ]]; then
 					echo
-					echo " 请在 ShadowRay 配置界面打开 TLS (Enable TLS) (如果你使用 ShadowRay)"
+					echo " 请在 Pepi / ShadowRay 配置界面打开 TLS (Enable TLS) (如果你使用 Pepi / ShadowRay)"
 				fi
 			elif [[ $ios_qr ]]; then
-				echo -e "$red 生成适用于 ShadowRay 的二维码链接 出错.... $none 请尝试使用${cyan} v2ray qr ${none}重新生成"
+				echo -e "$red 生成适用于 Pepi / ShadowRay 的二维码链接 出错.... $none 请尝试使用${cyan} v2ray qr ${none}重新生成"
 			else
-				echo -e "$red 帅帅的提示...此 V2Ray 配置不支持 ShadowRay...$none"
+				echo -e "$red 帅帅的提示...此 V2Ray 配置不支持 Pepi / ShadowRay...$none"
 			fi
 			echo
 			echo
@@ -1417,17 +1422,17 @@ get_qr_link() {
 			echo -e "$yellow 适用于 V2RayNG / Kitsunebi = $cyan${link1}$none"
 			echo
 			if [[ $ios_qr && $link3 ]]; then
-				echo -e "$yellow 适用于 ShadowRay = $cyan${link3}$none"
+				echo -e "$yellow 适用于 Pepi / ShadowRay = $cyan${link3}$none"
 				echo
-				echo " 请在 ShadowRay 配置界面将 Alter Id 设置为 233 (如果你使用 ShadowRay)"
+				echo " 请在 Pepi / ShadowRay 配置界面将 Alter Id 设置为 233 (如果你使用 Pepi / ShadowRay)"
 				if [[ $v2ray_transport_opt == 4 ]]; then
 					echo
-					echo " 请在 ShadowRay 配置界面打开 TLS (Enable TLS) (如果你使用 ShadowRay)"
+					echo " 请在 Pepi / ShadowRay 配置界面打开 TLS (Enable TLS) (如果你使用 Pepi / ShadowRay)"
 				fi
 			elif [[ $ios_qr ]]; then
-				echo -e "$red 生成适用于 ShadowRay 的二维码链接 出错.... $none 请尝试使用${cyan} v2ray qr ${none}重新生成"
+				echo -e "$red 生成适用于 Pepi / ShadowRay 的二维码链接 出错.... $none 请尝试使用${cyan} v2ray qr ${none}重新生成"
 			else
-				echo -e "$red 帅帅的提示...此 V2Ray 配置不支持 ShadowRay...$none"
+				echo -e "$red 帅帅的提示...此 V2Ray 配置不支持 Pepi / ShadowRay...$none"
 			fi
 			echo
 			echo
@@ -1660,6 +1665,30 @@ uninstall() {
 	fi
 
 }
+
+args=$1
+[ -z $1 ] && args="online"
+case $args in
+online)
+	#hello world
+	;;
+local)
+	local_install=true
+	;;
+*)
+	echo
+	echo -e " 大佬...你输入的这个参数 <$red $args $none> ...这个是什么鬼啊...脚本不认识它哇"
+	echo
+	echo -e " 这个辣鸡脚本仅支持输入$green local / online $none参数"
+	echo
+	echo -e " 输入$yellow local $none即是使用本地安装"
+	echo
+	echo -e " 输入$yellow online $none即是使用在线安装 (默认)"
+	echo
+	exit 1
+	;;
+esac
+
 clear
 while :; do
 	echo
@@ -1673,6 +1702,10 @@ while :; do
 	echo
 	echo " 2. 卸载"
 	echo
+	if [[ $local_install ]]; then
+		echo " 温馨提示.. 本地安装已启用 .."
+		echo
+	fi
 	read -p "$(echo -e "请选择 [${magenta}1-2$none]:")" choose
 	case $choose in
 	1)
